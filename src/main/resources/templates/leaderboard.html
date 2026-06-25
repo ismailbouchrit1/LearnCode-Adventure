@@ -99,7 +99,8 @@
       <span class="lb-stat-label"><i class="fa-solid fa-users"></i> Joueurs</span>
     </div>
     <div class="lb-stat">
-      <span class="lb-stat-num" th:text="${classement.isEmpty() ? 0 : classement[0].score}">0</span>
+      <span class="lb-stat-num" th:if="${not #lists.isEmpty(classement)}" th:text="${classement[0].score}">0</span>
+      <span class="lb-stat-num" th:if="${#lists.isEmpty(classement)}">0</span>
       <span class="lb-stat-label"><i class="fa-solid fa-crown" style="color:#ffd700;"></i> Meilleur score</span>
     </div>
     <div class="lb-stat" th:if="${student != null}">
@@ -135,13 +136,7 @@
 
           <!-- Lignes joueurs -->
           <tr th:each="s, st : ${classement}"
-              th:classappend="
-                ${st.index == 0} ? 'rank-gold' :
-                ${st.index == 1} ? 'rank-silver' :
-                ${st.index == 2} ? 'rank-bronze' : ''
-              "
-              th:class="${student != null and s.nom == student.nom} ?
-                         'current-player' : ''">
+              th:classappend="${(st.index == 0 ? 'rank-gold ' : (st.index == 1 ? 'rank-silver ' : (st.index == 2 ? 'rank-bronze ' : ''))) + (student != null and s.nom == student?.nom ? 'current-player' : '')}">
 
             <!-- Rang -->
             <td>
