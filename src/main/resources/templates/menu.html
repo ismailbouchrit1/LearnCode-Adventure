@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu - LearnCode</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div id="starfield"></div>
+<div th:replace="~{fragments :: hud}"></div>
+
+<div class="screen" style="padding-top:68px;align-items:center;">
+  <h1 class="main-title animate-gradient">Menu Principal</h1>
+  <p class="subtitle">Bonne chance, <span class="gold-text" th:text="${student.nom}"></span> !</p>
+
+  <div class="games-grid">
+
+    <a href="/game/puzzle" class="game-card g1">
+      <div class="game-icon-wrap purple-bg">
+        <i class="fa-solid fa-puzzle-piece" style="font-size:2.5rem;color:#6c63ff;"></i>
+      </div>
+      <div class="game-title">Puzzle Python</div>
+      <div class="game-desc">Remets les lignes de code dans le bon ordre. Drag &amp; Drop interactif !</div>
+      <span class="game-tag tag-purple"><i class="fa-solid fa-hand-pointer"></i> Drag &amp; Drop</span>
+    </a>
+
+    <a href="/game/runner" class="game-card g2">
+      <div class="game-icon-wrap gold-bg">
+        <i class="fa-solid fa-person-running" style="font-size:2.5rem;color:#f7971e;"></i>
+      </div>
+      <div class="game-title">Runner Quiz</div>
+      <div class="game-desc">Cours, saute par-dessus les obstacles et reponds aux questions Python !</div>
+      <span class="game-tag tag-gold"><i class="fa-solid fa-bolt"></i> Action + Quiz</span>
+    </a>
+
+    <a href="/game/memory" class="game-card g3">
+      <div class="game-icon-wrap green-bg">
+        <i class="fa-solid fa-brain" style="font-size:2.5rem;color:#43e97b;"></i>
+      </div>
+      <div class="game-title">Code Memory</div>
+      <div class="game-desc">Associe les mots-cles Python avec leurs definitions. Entraine ta memoire !</div>
+      <span class="game-tag tag-green"><i class="fa-solid fa-cards-blank"></i> Memoire</span>
+    </a>
+
+  </div>
+
+  <div class="bottom-btns">
+    <a href="/leaderboard" class="btn btn-gold">
+      <i class="fa-solid fa-ranking-star"></i> Classement
+    </a>
+    <a href="/character" class="btn btn-outline">
+      <i class="fa-solid fa-rotate"></i> Changer de joueur
+    </a>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <i class="fa-solid fa-puzzle-piece" style="color:#6c63ff;font-size:1.2rem;"></i>
+      <span class="stat-num" th:text="${student.puzzlesResolus}">0</span>
+      <span class="stat-label">Puzzles</span>
+    </div>
+    <div class="stat-item">
+      <i class="fa-solid fa-circle-question" style="color:#f7971e;font-size:1.2rem;"></i>
+      <span class="stat-num" th:text="${student.quizReussis}">0</span>
+      <span class="stat-label">Quiz</span>
+    </div>
+    <div class="stat-item">
+      <i class="fa-solid fa-brain" style="color:#43e97b;font-size:1.2rem;"></i>
+      <span class="stat-num" th:text="${student.partiesMemory}">0</span>
+      <span class="stat-label">Memory</span>
+    </div>
+    <div class="stat-item">
+      <i class="fa-solid fa-medal" style="color:#ffd700;font-size:1.2rem;"></i>
+      <span class="stat-num" th:text="${student.badgesList.size()}">0</span>
+      <span class="stat-label">Badges</span>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/stars.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

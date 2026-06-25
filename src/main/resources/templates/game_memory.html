@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Code Memory - LearnCode</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/memory.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div id="starfield"></div>
+<div th:replace="~{fragments :: hud}"></div>
+
+<!-- MODAL CONSIGNES -->
+<div id="modal-consignes" class="modal-overlay open">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <i class="fa-solid fa-brain" style="color:#43e97b;font-size:3rem;"></i>
+    </div>
+    <h2 class="modal-title" style="color:#43e97b;">Code Memory Challenge</h2>
+    <div class="modal-rules">
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-1" style="color:#43e97b;"></i>
+        <span>Des cartes sont <strong>retournees</strong> face cachee</span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-2" style="color:#6c63ff;"></i>
+        <span>Clique sur 2 cartes pour les retourner</span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-3" style="color:#f7971e;"></i>
+        <span>Associe chaque <strong>mot-cle Python</strong> avec sa <strong>definition</strong></span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-check" style="color:#43e97b;"></i>
+        <span>Paire trouvee → <strong style="color:#ffd700;">+5 points</strong></span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-clock" style="color:#ffd700;"></i>
+        <span>Plus tu es rapide, plus tu gagnes de <strong style="color:#ffd700;">bonus</strong> !</span>
+      </div>
+    </div>
+    <div class="memory-examples">
+      <div class="mem-ex"><code>if</code> <i class="fa-solid fa-arrows-left-right" style="color:#9999cc;"></i> <span>condition</span></div>
+      <div class="mem-ex"><code>print()</code> <i class="fa-solid fa-arrows-left-right" style="color:#9999cc;"></i> <span>afficher</span></div>
+      <div class="mem-ex"><code>for</code> <i class="fa-solid fa-arrows-left-right" style="color:#9999cc;"></i> <span>boucle</span></div>
+    </div>
+    <button class="btn btn-success btn-lg" style="margin-top:20px;" onclick="closeConsignes()">
+      <i class="fa-solid fa-play"></i> C'est parti !
+    </button>
+  </div>
+</div>
+
+<!-- MODAL COURS -->
+<div id="modal-cours" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:680px;max-height:85vh;overflow-y:auto;">
+    <div class="modal-icon"><i class="fa-solid fa-book-open" style="color:#43e97b;font-size:2.5rem;"></i></div>
+    <h2 class="modal-title" style="color:#43e97b;">Vocabulaire Python</h2>
+    <p style="color:var(--muted);margin-bottom:16px;">Apprends ces mots-cles pour gagner au Memory !</p>
+
+    <div class="vocab-grid">
+      <div class="vocab-item"><code>if</code><span>condition</span></div>
+      <div class="vocab-item"><code>print()</code><span>afficher</span></div>
+      <div class="vocab-item"><code>input()</code><span>saisir</span></div>
+      <div class="vocab-item"><code>list</code><span>liste</span></div>
+      <div class="vocab-item"><code>for</code><span>boucle</span></div>
+      <div class="vocab-item"><code>def</code><span>fonction</span></div>
+      <div class="vocab-item"><code>int()</code><span>entier</span></div>
+      <div class="vocab-item"><code>str()</code><span>texte</span></div>
+      <div class="vocab-item"><code>True</code><span>vrai</span></div>
+      <div class="vocab-item"><code>False</code><span>faux</span></div>
+      <div class="vocab-item"><code>while</code><span>repeter si</span></div>
+      <div class="vocab-item"><code>return</code><span>retourner</span></div>
+    </div>
+
+    <div class="cours-section" style="margin-top:16px;">
+      <h4><i class="fa-solid fa-lightbulb" style="color:#ffd700;"></i> Astuce memoire</h4>
+      <pre class="code-block">if condition:      # SI
+    ...
+for i in range:    # POUR chaque i
+    ...
+def maFonc():      # DEFINIR une fonction
+    return val     # RETOURNER une valeur</pre>
+    </div>
+
+    <button class="btn btn-success" onclick="closeCours()">
+      <i class="fa-solid fa-check"></i> Je m'en souviens ! Jouer
+    </button>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div id="victory-overlay" class="victory-overlay" style="display:none;">
+  <div class="victory-box">
+    <div class="victory-icon">
+      <i class="fa-solid fa-trophy" style="color:#ffd700;font-size:3.5rem;animation:bounce 1s ease infinite;"></i>
+    </div>
+    <h2 class="victory-title">Memoire parfaite !</h2>
+    <p class="victory-text" id="victory-text"></p>
+    <div class="victory-stars">
+      <i class="fa-solid fa-star" style="color:#ffd700;font-size:2rem;animation:pop .4s .1s ease both;"></i>
+      <i class="fa-solid fa-star" style="color:#ffd700;font-size:2rem;animation:pop .4s .2s ease both;"></i>
+      <i class="fa-solid fa-star" style="color:#ffd700;font-size:2rem;animation:pop .4s .3s ease both;"></i>
+    </div>
+    <div class="btn-row">
+      <a th:href="@{/game/memory(diff=${difficulte})}" class="btn btn-gold">
+        <i class="fa-solid fa-rotate"></i> Rejouer
+      </a>
+      <a href="/menu" class="btn btn-outline">
+        <i class="fa-solid fa-house"></i> Menu
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="screen" style="padding-top:70px;align-items:center;">
+  <h2 class="section-title" style="color:var(--acc3);">
+    <i class="fa-solid fa-brain"></i> Code Memory Challenge
+  </h2>
+
+  <div class="memory-stats">
+    <div class="mem-stat">
+      <i class="fa-solid fa-link" style="color:#ffd700;"></i>
+      Paires : <span class="gold-text" id="pairs-count">0</span> / <span id="pairs-total" th:text="${nbPaires}">4</span>
+    </div>
+    <div class="mem-stat">
+      <i class="fa-solid fa-xmark" style="color:var(--red);"></i>
+      Erreurs : <span style="color:var(--red)" id="errors-count">0</span>
+    </div>
+    <div class="mem-stat">
+      <i class="fa-solid fa-clock" style="color:var(--acc3);"></i>
+      <span style="color:var(--acc3)" id="timer-display">00:00</span>
+    </div>
+  </div>
+
+  <div class="diff-selector">
+    <a href="/game/memory?diff=easy"   class="diff-btn" th:classappend="${difficulte=='easy'}?'active':''">
+      <i class="fa-solid fa-seedling"></i> 4 paires
+    </a>
+    <a href="/game/memory?diff=medium" class="diff-btn" th:classappend="${difficulte=='medium'}?'active':''">
+      <i class="fa-solid fa-fire-flame-simple"></i> 8 paires
+    </a>
+    <a href="/game/memory?diff=hard"   class="diff-btn" th:classappend="${difficulte=='hard'}?'active':''">
+      <i class="fa-solid fa-skull"></i> 12 paires
+    </a>
+  </div>
+
+  <div class="memory-grid" id="memory-grid"></div>
+
+  <div class="btn-row" style="margin-top:16px;">
+    <a th:href="@{/game/memory(diff=${difficulte})}" class="btn btn-gold">
+      <i class="fa-solid fa-rotate"></i> Nouvelle Partie
+    </a>
+    <button class="btn btn-outline" onclick="showCours()">
+      <i class="fa-solid fa-book-open"></i> Voir le cours
+    </button>
+    <a href="/menu" class="btn btn-outline">
+      <i class="fa-solid fa-house"></i> Retour
+    </a>
+  </div>
+</div>
+
+<script th:src="@{/js/stars.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:inline="javascript">
+  const PAIRES_DATA = [
+    /*[# th:each="p,st : ${paires}" ]*/
+    { id: /*[[${st.index}]]*/ 0, keyword: /*[[${p.motCle()}]]*/ '', meaning: /*[[${p.definition()}]]*/ '' }/*[# th:if="${!st.last}"]*/,/*[/]*/
+    /*[/]*/
+  ];
+  const NB_PAIRES = /*[[${nbPaires}]]*/ 4;
+</script>
+<script th:src="@{/js/memory.js}"></script>
+<script>
+function closeConsignes() {
+  document.getElementById('modal-consignes').style.display = 'none';
+}
+function showCours() {
+  document.getElementById('modal-cours').style.display = 'flex';
+}
+function closeCours() {
+  document.getElementById('modal-cours').style.display = 'none';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Resultat Puzzle - LearnCode</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/puzzle.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div id="starfield"></div>
+<div th:replace="~{fragments :: hud}"></div>
+
+<!-- MODAL COURS si game over -->
+<div id="modal-cours" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:680px;max-height:85vh;overflow-y:auto;">
+    <div class="modal-icon">
+      <i class="fa-solid fa-book-open" style="color:#43e97b;font-size:2.5rem;"></i>
+    </div>
+    <h2 class="modal-title" style="color:#43e97b;">Cours Python Rapide</h2>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-database" style="color:#6c63ff;"></i> Variables</h4>
+      <pre class="code-block">nom = "Abir"       # texte (str)
+age = 16           # entier (int)
+note = 18.5        # decimal (float)
+actif = True       # booleen (bool)</pre>
+    </div>
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-keyboard" style="color:#f7971e;"></i> Entrees / Sorties</h4>
+      <pre class="code-block">nom = input("Ton nom : ")   # lire
+print("Bonjour", nom)       # afficher</pre>
+    </div>
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-code-branch" style="color:#ff6584;"></i> Conditions</h4>
+      <pre class="code-block">if age >= 18:
+    print("Majeur")
+else:
+    print("Mineur")</pre>
+    </div>
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-rotate" style="color:#43e97b;"></i> Boucles</h4>
+      <pre class="code-block">for i in range(5):   # 0,1,2,3,4
+    print(i)
+
+while x > 0:
+    x = x - 1</pre>
+    </div>
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-gear" style="color:#a29bfe;"></i> Fonctions</h4>
+      <pre class="code-block">def saluer(nom):
+    return "Bonjour " + nom
+
+print(saluer("Abir"))</pre>
+    </div>
+    <button class="btn btn-success" onclick="document.getElementById('modal-cours').style.display='none'">
+      <i class="fa-solid fa-check"></i> Compris ! Fermer
+    </button>
+  </div>
+</div>
+
+<div class="screen center-screen" style="padding-top:70px;">
+  <div class="card result-card">
+
+    <!-- ══ CORRECT ══ -->
+    <div th:if="${correct}">
+      <div style="font-size:4rem;margin-bottom:16px;animation:bounce 1s ease infinite;">
+        <i class="fa-solid fa-circle-check" style="color:#43e97b;"></i>
+      </div>
+      <h2 style="font-family:'Fredoka One',cursive;font-size:2rem;color:#43e97b;margin-bottom:8px;">
+        Parfait !
+      </h2>
+      <p style="color:var(--muted);margin-bottom:16px;font-size:1rem;">
+        <i class="fa-solid fa-star" style="color:#ffd700;"></i>
+        Code correct ! <strong style="color:#ffd700;">+10 points</strong> gagnes !
+      </p>
+
+      <!-- Nouveaux badges -->
+      <div th:if="${!nouveauxBadges.isEmpty()}" class="badge-list">
+        <p style="color:var(--gold);font-family:'Fredoka One',cursive;margin-bottom:8px;">
+          <i class="fa-solid fa-medal"></i> Nouveaux badges !
+        </p>
+        <span th:each="b : ${nouveauxBadges}" class="badge-item">
+          <i class="fa-solid fa-award"></i>
+          <span th:text="${b}"></span>
+        </span>
+      </div>
+
+      <div class="btn-row" style="margin-top:20px;">
+        <a href="/game/puzzle" class="btn btn-success">
+          <i class="fa-solid fa-forward"></i> Puzzle suivant
+        </a>
+        <a href="/menu" class="btn btn-outline">
+          <i class="fa-solid fa-house"></i> Menu
+        </a>
+      </div>
+    </div>
+
+    <!-- ══ INCORRECT ══ -->
+    <div th:unless="${correct}">
+      <div style="font-size:4rem;margin-bottom:16px;animation:shake .5s ease infinite;">
+        <i class="fa-solid fa-circle-xmark" style="color:#ff6584;"></i>
+      </div>
+      <h2 style="font-family:'Fredoka One',cursive;font-size:2rem;color:#ff6584;margin-bottom:8px;">
+        Presque !
+      </h2>
+      <p style="color:var(--muted);margin-bottom:4px;">
+        L'ordre n'est pas correct.
+        <strong style="color:#ff4757;">
+          <i class="fa-solid fa-heart-crack"></i> -1 vie
+        </strong>
+      </p>
+
+      <!-- Alerte game over -->
+      <div th:if="${student.vies <= 0}"
+           style="background:rgba(255,71,87,.1);border:1px solid #ff4757;border-radius:14px;padding:16px;margin:16px 0;">
+        <p style="color:#ff4757;font-family:'Fredoka One',cursive;font-size:1.1rem;">
+          <i class="fa-solid fa-skull-crossbones"></i> Plus de vies !
+        </p>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:6px;">
+          Tu dois reviser le cours Python avant de recommencer !
+        </p>
+        <button class="btn btn-success" style="margin-top:12px;"
+                onclick="document.getElementById('modal-cours').style.display='flex'">
+          <i class="fa-solid fa-book-open"></i> Voir le cours maintenant
+        </button>
+      </div>
+
+      <!-- Conseil si pas game over -->
+      <div th:if="${student.vies > 0}"
+           style="background:rgba(247,151,30,.1);border:1px solid rgba(247,151,30,.3);border-radius:14px;padding:12px;margin:12px 0;">
+        <p style="color:#ffd200;font-size:.9rem;">
+          <i class="fa-solid fa-lightbulb"></i>
+          Rappel : un programme Python se lit de haut en bas.
+          Variables → Entrees → Traitement → Affichage
+        </p>
+      </div>
+
+      <div class="btn-row" style="margin-top:16px;">
+        <a th:href="@{/game/puzzle(id=${puzzle.id()})}" class="btn btn-primary">
+          <i class="fa-solid fa-rotate"></i> Reessayer
+        </a>
+        <button class="btn btn-success"
+                onclick="document.getElementById('modal-cours').style.display='flex'">
+          <i class="fa-solid fa-book-open"></i> Voir le cours
+        </button>
+        <a href="/game/puzzle" class="btn btn-gold">
+          <i class="fa-solid fa-shuffle"></i> Nouveau puzzle
+        </a>
+        <a href="/menu" class="btn btn-outline">
+          <i class="fa-solid fa-house"></i> Menu
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script th:src="@{/js/stars.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:if="${correct}">
+  spawnConfetti(60);
+</script>
+</body>
+</html>

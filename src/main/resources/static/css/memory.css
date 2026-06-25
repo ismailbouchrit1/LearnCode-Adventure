@@ -1,0 +1,16 @@
+/* memory.css */
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:580px;width:100%;margin:16px 0;}
+.mem-card{aspect-ratio:1;min-height:94px;background:var(--card);border:2px solid rgba(108,99,255,.3);border-radius:16px;cursor:pointer;transition:transform .4s,border-color .3s;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;transform-style:preserve-3d;position:relative;}
+.mem-card:hover:not(.flipped):not(.matched){border-color:var(--acc1);transform:translateY(-3px);}
+.mem-card.flipped{transform:rotateY(180deg);}
+.mem-card.matched{border-color:var(--acc3);box-shadow:0 0 18px rgba(67,233,123,.35);pointer-events:none;}
+.mem-front,.mem-back{position:absolute;inset:0;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;padding:8px;backface-visibility:hidden;}
+.mem-front{background:linear-gradient(135deg,rgba(30,30,62,.9),rgba(18,18,42,.95));}
+.q-mark{font-family:'Fredoka One',cursive;font-size:1.8rem;color:rgba(108,99,255,.5);}
+.mem-back{transform:rotateY(180deg);background:linear-gradient(135deg,rgba(108,99,255,.2),rgba(80,60,200,.15));}
+.mem-back.meaning-card{background:linear-gradient(135deg,rgba(67,233,123,.15),rgba(40,160,80,.1));}
+.card-text{font-family:'Courier New',monospace;font-weight:700;font-size:.92rem;color:#a8d8ea;text-align:center;}
+.meaning-card .card-text{color:#c3e88d;}
+.card-type{font-size:.72rem;font-weight:700;color:rgba(108,99,255,.7);}
+.meaning-card .card-type{color:rgba(67,233,123,.7);}
+@media(max-width:500px){.memory-grid{grid-template-columns:repeat(3,1fr);}}

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LearnCode Adventure</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div id="starfield"></div>
+
+<!-- ══ ÉCRAN 1 : CHOIX PERSONNAGE ══ -->
+<div id="screen-char" class="screen center-screen">
+  <h1 class="main-title animate-gradient">LearnCode Adventure</h1>
+  <p class="subtitle"><i class="fa-solid fa-dragon"></i> Apprends Python en jouant !</p>
+
+  <div class="alert alert-danger" th:if="${erreur}" th:text="${erreur}"></div>
+
+  <p class="choose-label">
+    <i class="fa-solid fa-wand-magic-sparkles" style="color:#ffd700;"></i>
+    Choisis ton personnage
+  </p>
+
+  <form action="/character" method="post" id="form-char">
+    <input type="hidden" name="personnage" id="perso-input" value="girl">
+
+    <div class="char-grid">
+
+      <!-- FILLE -->
+      <div class="char-card" id="card-girl" onclick="selectChar('girl')">
+        <div class="char-badge girl-badge">
+          <i class="fa-solid fa-venus"></i> FILLE
+        </div>
+        <div class="char-avatar girl-avatar">
+          <!-- Corps robe -->
+          <div class="av-body girl-body">
+            <div class="av-collar"></div>
+            <div class="av-skirt"></div>
+          </div>
+          <!-- Bras -->
+          <div class="av-arm left"></div>
+          <div class="av-arm right"></div>
+          <!-- Tête -->
+          <div class="av-head">
+            <!-- Cheveux -->
+            <div class="av-hair girl-hair">
+              <div class="av-bun left"></div>
+              <div class="av-bun right"></div>
+              <div class="av-hairband"></div>
+            </div>
+            <!-- Visage -->
+            <div class="av-face">
+              <div class="av-eyes">
+                <div class="av-eye left">
+                  <div class="av-pupil"></div>
+                  <div class="av-shine"></div>
+                  <div class="av-lash l1"></div>
+                  <div class="av-lash l2"></div>
+                </div>
+                <div class="av-eye right">
+                  <div class="av-pupil"></div>
+                  <div class="av-shine"></div>
+                  <div class="av-lash l1"></div>
+                  <div class="av-lash l2"></div>
+                </div>
+              </div>
+              <div class="av-nose"></div>
+              <div class="av-mouth girl-mouth"></div>
+              <div class="av-cheek left"></div>
+              <div class="av-cheek right"></div>
+            </div>
+          </div>
+          <!-- Jambes -->
+          <div class="av-legs">
+            <div class="av-leg left"></div>
+            <div class="av-leg right"></div>
+          </div>
+          <!-- Sparkles -->
+          <div class="sparkle s1"><i class="fa-solid fa-star" style="color:#ffd700;font-size:10px;"></i></div>
+          <div class="sparkle s2"><i class="fa-solid fa-sparkles" style="color:#ff9ff3;font-size:8px;"></i></div>
+          <div class="sparkle s3"><i class="fa-solid fa-star" style="color:#a29bfe;font-size:6px;"></i></div>
+        </div>
+        <div class="char-label" style="color:#ff6b9d;">
+          <i class="fa-solid fa-heart"></i> Personnage Fille
+        </div>
+        <div class="char-sub">Curieuse &amp; Creative</div>
+        <div class="char-selected-mark" id="mark-girl">
+          <i class="fa-solid fa-circle-check" style="color:#ffd700;font-size:1.4rem;"></i>
+        </div>
+      </div>
+
+      <!-- GARCON -->
+      <div class="char-card" id="card-boy" onclick="selectChar('boy')">
+        <div class="char-badge boy-badge">
+          <i class="fa-solid fa-mars"></i> GARCON
+        </div>
+        <div class="char-avatar boy-avatar">
+          <!-- Corps -->
+          <div class="av-body boy-body">
+            <div class="av-collar boy-collar"></div>
+            <div class="av-pocket"></div>
+          </div>
+          <!-- Bras -->
+          <div class="av-arm left boy-arm"></div>
+          <div class="av-arm right boy-arm"></div>
+          <!-- Mini laptop -->
+          <div class="av-laptop">
+            <div class="av-laptop-screen">
+              <span style="font-size:5px;color:#a5d6a7;font-family:monospace;">&gt;_</span>
+            </div>
+          </div>
+          <!-- Tête -->
+          <div class="av-head">
+            <!-- Cheveux + Casquette -->
+            <div class="av-hair boy-hair">
+              <div class="av-cap">
+                <div class="av-cap-brim"></div>
+              </div>
+            </div>
+            <!-- Oreilles -->
+            <div class="av-ear left"></div>
+            <div class="av-ear right"></div>
+            <!-- Visage -->
+            <div class="av-face">
+              <div class="av-eyes">
+                <div class="av-eye left boy-eye">
+                  <div class="av-pupil"></div>
+                  <div class="av-shine"></div>
+                </div>
+                <div class="av-eye right boy-eye">
+                  <div class="av-pupil"></div>
+                  <div class="av-shine"></div>
+                </div>
+              </div>
+              <div class="av-nose"></div>
+              <div class="av-mouth boy-mouth"></div>
+              <div class="av-cheek left"></div>
+              <div class="av-cheek right"></div>
+            </div>
+          </div>
+          <!-- Jambes -->
+          <div class="av-legs">
+            <div class="av-leg left boy-leg">
+              <div class="av-shoe"></div>
+            </div>
+            <div class="av-leg right boy-leg">
+              <div class="av-shoe"></div>
+            </div>
+          </div>
+          <!-- Sparkles -->
+          <div class="sparkle s1"><i class="fa-solid fa-star" style="color:#ffd700;font-size:10px;"></i></div>
+          <div class="sparkle s4"><i class="fa-solid fa-code" style="color:#74b9ff;font-size:8px;"></i></div>
+        </div>
+        <div class="char-label" style="color:#74b9ff;">
+          <i class="fa-solid fa-bolt"></i> Personnage Garcon
+        </div>
+        <div class="char-sub">Logique &amp; Aventurier</div>
+        <div class="char-selected-mark" id="mark-boy">
+          <i class="fa-solid fa-circle-check" style="color:#ffd700;font-size:1.4rem;"></i>
+        </div>
+      </div>
+
+    </div><!-- /char-grid -->
+
+    <!-- Champ nom -->
+    <div id="name-section" class="name-section" style="display:none;">
+      <label class="name-label">
+        <i class="fa-solid fa-pen-to-square" style="color:#6c63ff;"></i>
+        Entre ton prenom :
+      </label>
+      <input type="text" name="nom" id="nom-input"
+             class="input-field" placeholder="Ex: Abir, Youssef..."
+             maxlength="20" autocomplete="off"/>
+      <button type="submit" class="btn btn-primary btn-lg" id="btn-start" style="display:none;">
+        <i class="fa-solid fa-rocket"></i> Commencer l'aventure !
+      </button>
+    </div>
+
+  </form>
+</div><!-- /screen-char -->
+
+<!-- ══ ÉCRAN 2 : BIENVENUE ══ -->
+<div id="screen-welcome" class="screen center-screen" style="display:none;">
+  <div class="welcome-avatar" id="welcome-avatar">
+    <i class="fa-solid fa-face-grin-stars" style="font-size:5rem;color:#ffd700;animation:bounce 1.5s ease infinite;display:block;text-align:center;"></i>
+  </div>
+
+  <h1 class="main-title" style="margin-top:16px;">
+    Bienvenue <span class="gold-text" id="welcome-name"></span> !
+    <i class="fa-solid fa-party-horn" style="color:#ff6584;"></i>
+  </h1>
+  <p class="subtitle">Prepare-toi a apprendre Python en jouant !</p>
+
+  <div class="welcome-card">
+    <h3 class="welcome-section-title">
+      <i class="fa-solid fa-bullseye" style="color:#6c63ff;"></i>
+      Tes objectifs dans cette aventure
+    </h3>
+    <div class="goal-list">
+      <div class="goal-item">
+        <span class="goal-icon"><i class="fa-solid fa-brain" style="color:#6c63ff;"></i></span>
+        <span>Developper ta logique de programmation</span>
+      </div>
+      <div class="goal-item">
+        <span class="goal-icon"><i class="fa-brands fa-python" style="color:#f7971e;"></i></span>
+        <span>Comprendre les bases de Python</span>
+      </div>
+      <div class="goal-item">
+        <span class="goal-icon"><i class="fa-solid fa-lightbulb" style="color:#43e97b;"></i></span>
+        <span>Resoudre des defis amusants</span>
+      </div>
+      <div class="goal-item">
+        <span class="goal-icon"><i class="fa-solid fa-star" style="color:#ffd700;"></i></span>
+        <span>Gagner des points et des badges</span>
+      </div>
+      <div class="goal-item">
+        <span class="goal-icon"><i class="fa-solid fa-trophy" style="color:#ff6584;"></i></span>
+        <span>Passer les niveaux et devenir expert Python</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="welcome-card" style="margin-top:12px;">
+    <h3 class="welcome-section-title">
+      <i class="fa-solid fa-gamepad" style="color:#ff6584;"></i>
+      Les 3 jeux qui t'attendent
+    </h3>
+    <div class="games-preview">
+      <div class="gp-item">
+        <i class="fa-solid fa-puzzle-piece" style="color:#6c63ff;font-size:1.8rem;"></i>
+        <div class="gp-title">Puzzle Python</div>
+        <div class="gp-desc">Remets le code dans l'ordre</div>
+      </div>
+      <div class="gp-item">
+        <i class="fa-solid fa-person-running" style="color:#f7971e;font-size:1.8rem;"></i>
+        <div class="gp-title">Runner Quiz</div>
+        <div class="gp-desc">Cours et reponds aux questions</div>
+      </div>
+      <div class="gp-item">
+        <i class="fa-solid fa-brain" style="color:#43e97b;font-size:1.8rem;"></i>
+        <div class="gp-title">Code Memory</div>
+        <div class="gp-desc">Associe les mots-cles</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-success btn-lg" style="margin-top:24px;" onclick="goToGame()">
+    <i class="fa-solid fa-play"></i> Commencer l'aventure !
+  </button>
+</div>
+
+<script th:src="@{/js/stars.js}"></script>
+<script>
+let selectedChar = 'girl';
+let playerName   = '';
+
+function selectChar(type) {
+  selectedChar = type;
+  document.getElementById('perso-input').value = type;
+  document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('card-' + type).classList.add('selected');
+  document.getElementById('mark-girl').style.display = 'none';
+  document.getElementById('mark-boy').style.display  = 'none';
+  document.getElementById('mark-' + type).style.display = 'block';
+  document.getElementById('name-section').style.display = 'flex';
+  document.getElementById('nom-input').focus();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('nom-input');
+  const btn   = document.getElementById('btn-start');
+  if (input && btn) {
+    input.addEventListener('input', () => {
+      btn.style.display = input.value.trim().length >= 1 ? 'inline-flex' : 'none';
+    });
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && input.value.trim().length >= 1) {
+        e.preventDefault(); showWelcome();
+      }
+    });
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      if (input.value.trim().length >= 1) showWelcome();
+    });
+  }
+});
+
+function showWelcome() {
+  playerName = document.getElementById('nom-input').value.trim();
+  if (!playerName) return;
+
+  // Affiche écran bienvenue
+  document.getElementById('screen-char').style.display    = 'none';
+  document.getElementById('screen-welcome').style.display = 'flex';
+
+  document.getElementById('welcome-name').textContent = playerName;
+
+  // Icone selon personnage
+  const av = document.getElementById('welcome-avatar');
+  av.innerHTML = selectedChar === 'girl'
+    ? '<i class="fa-solid fa-face-kiss-wink-heart" style="font-size:5rem;color:#ff6b9d;animation:bounce 1.5s ease infinite;display:block;text-align:center;"></i>'
+    : '<i class="fa-solid fa-face-grin-squint" style="font-size:5rem;color:#74b9ff;animation:bounce 1.5s ease infinite;display:block;text-align:center;"></i>';
+}
+
+function goToGame() {
+  // Soumettre le formulaire vers /character
+  document.getElementById('perso-input').value = selectedChar;
+  document.getElementById('nom-input').value   = playerName;
+  document.getElementById('form-char').submit();
+}
+</script>
+</body>
+</html>

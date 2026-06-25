@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Runner Quiz - LearnCode</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/runner.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div id="starfield"></div>
+<div th:replace="~{fragments :: hud}"></div>
+
+<!-- MODAL CONSIGNES -->
+<div id="modal-consignes" class="modal-overlay open">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <i class="fa-solid fa-person-running" style="color:#f7971e;font-size:3rem;"></i>
+    </div>
+    <h2 class="modal-title" style="color:#f7971e;">Adventure Quiz Runner</h2>
+    <div class="modal-rules">
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-1" style="color:#f7971e;"></i>
+        <span>Ton personnage court automatiquement</span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-2" style="color:#6c63ff;"></i>
+        <span>Appuie sur <kbd>Espace</kbd> ou le bouton <strong>Sauter</strong> pour eviter les obstacles <i class="fa-solid fa-ghost" style="color:#ff4757;"></i></span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-3" style="color:#ffd700;"></i>
+        <span>Collecte les <i class="fa-solid fa-star" style="color:#ffd700;"></i> etoiles pour gagner des points</span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-4" style="color:#43e97b;"></i>
+        <span>Entre dans la <i class="fa-solid fa-door-open" style="color:#a29bfe;"></i> porte → Question Python !</span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-check" style="color:#43e97b;"></i>
+        <span>Bonne reponse → <strong style="color:#ffd700;">+20 points</strong></span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-heart-crack" style="color:#ff4757;"></i>
+        <span>Mauvaise reponse ou obstacle → <strong style="color:#ff4757;">-1 vie</strong></span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+      <span class="diff-badge" style="background:rgba(67,233,123,.2);color:#43e97b;border-color:#43e97b;">Debutant = lent</span>
+      <span class="diff-badge" style="background:rgba(247,151,30,.2);color:#ffd200;border-color:#f7971e;">Inter = rapide</span>
+      <span class="diff-badge" style="background:rgba(255,71,87,.2);color:#ff4757;border-color:#ff4757;">Avance = tres rapide</span>
+    </div>
+    <button class="btn btn-gold btn-lg" style="margin-top:20px;" onclick="closeConsignes()">
+      <i class="fa-solid fa-play"></i> C'est parti !
+    </button>
+  </div>
+</div>
+
+<!-- MODAL COURS -->
+<div id="modal-cours" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:680px;max-height:85vh;overflow-y:auto;">
+    <div class="modal-icon"><i class="fa-solid fa-book-open" style="color:#43e97b;font-size:2.5rem;"></i></div>
+    <h2 class="modal-title" style="color:#43e97b;">Cours Python — Questions du Runner</h2>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-terminal" style="color:#6c63ff;"></i> Fonctions de base</h4>
+      <pre class="code-block">print("Bonjour")      # afficher
+nom = input("Nom : ") # saisir
+len("Bonjour")        # → 7 (longueur)
+int("42")             # → 42 (convertir en entier)
+str(42)               # → "42" (convertir en texte)</pre>
+    </div>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-list-ol" style="color:#f7971e;"></i> Listes</h4>
+      <pre class="code-block">ma_liste = [1, 2, 3]
+ma_liste.append(4)    # ajouter a la fin → [1,2,3,4]
+ma_liste[0]           # → 1 (premier element)
+len(ma_liste)         # → 4</pre>
+    </div>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-rotate" style="color:#43e97b;"></i> Boucles</h4>
+      <pre class="code-block">range(5)              # genere 0,1,2,3,4
+for i in range(5):
+    print(i)          # s'execute 5 fois</pre>
+    </div>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-book" style="color:#a29bfe;"></i> Dictionnaires</h4>
+      <pre class="code-block">dico = {"nom": "Abir", "age": 16}
+dico.keys()   # → dict_keys(["nom", "age"])
+dico.values() # → dict_values(["Abir", 16])</pre>
+    </div>
+
+    <div class="cours-section">
+      <h4><i class="fa-brands fa-python" style="color:#ffd700;"></i> Types Python</h4>
+      <pre class="code-block">type(42)      # → int
+type(3.14)    # → float
+type("Abir")  # → str
+type(True)    # → bool
+"2" * 3       # → "222" (repetition de chaine)</pre>
+    </div>
+
+    <button class="btn btn-success" onclick="closeCours()">
+      <i class="fa-solid fa-check"></i> Compris ! Retour au jeu
+    </button>
+  </div>
+</div>
+
+<!-- MODAL GAME OVER -->
+<div id="modal-gameover" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <i class="fa-solid fa-skull-crossbones" style="color:#ff4757;font-size:3rem;"></i>
+    </div>
+    <h2 class="modal-title" style="color:#ff4757;">Game Over !</h2>
+    <p style="color:var(--muted);margin-bottom:20px;">
+      Tu as perdu toutes tes vies !<br>
+      <strong style="color:#ffd700;">
+        <i class="fa-solid fa-book-open"></i>
+        Revise le cours Python pour mieux repondre aux questions !
+      </strong>
+    </p>
+    <div class="btn-row">
+      <button class="btn btn-success" onclick="showCours()">
+        <i class="fa-solid fa-book-open"></i> Voir le cours
+      </button>
+      <a href="/game/runner" class="btn btn-gold">
+        <i class="fa-solid fa-rotate"></i> Rejouer
+      </a>
+      <a href="/menu" class="btn btn-outline">
+        <i class="fa-solid fa-house"></i> Menu
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL QUIZ -->
+<div id="quiz-modal" class="quiz-modal" style="display:none;">
+  <div class="quiz-box">
+    <div class="quiz-timer-bar"><div class="quiz-timer-fill" id="quiz-timer-fill"></div></div>
+    <div class="quiz-icon"><i class="fa-solid fa-circle-question" style="color:#ffd700;"></i></div>
+    <div class="quiz-title">Question Python !</div>
+    <div class="quiz-question" id="quiz-question"></div>
+    <div class="quiz-options" id="quiz-options"></div>
+    <div class="quiz-result" id="quiz-result" style="display:none;"></div>
+    <button class="btn-cours-inline" onclick="showCours()" style="margin-top:10px;">
+      <i class="fa-solid fa-book-open"></i> Je ne sais pas — voir le cours
+    </button>
+  </div>
+</div>
+
+<div class="screen" style="padding-top:70px;align-items:center;">
+  <h2 class="section-title" style="color:var(--gold);">
+    <i class="fa-solid fa-person-running"></i> Adventure Quiz Runner
+  </h2>
+  <p class="section-sub">Cours, saute et reponds aux questions Python !</p>
+
+  <div class="diff-selector">
+    <button class="diff-btn" th:classappend="${difficulte=='easy'}?'active':''" onclick="setDiff('easy')">
+      <i class="fa-solid fa-seedling"></i> Debutant
+    </button>
+    <button class="diff-btn" th:classappend="${difficulte=='medium'}?'active':''" onclick="setDiff('medium')">
+      <i class="fa-solid fa-fire-flame-simple"></i> Intermediaire
+    </button>
+    <button class="diff-btn" th:classappend="${difficulte=='hard'}?'active':''" onclick="setDiff('hard')">
+      <i class="fa-solid fa-skull"></i> Avance
+    </button>
+  </div>
+
+  <canvas id="runner-canvas" width="720" height="220"></canvas>
+
+  <div class="runner-controls">
+    <button class="btn btn-primary" onclick="runnerJump()">
+      <i class="fa-solid fa-arrow-up"></i> Sauter (Espace)
+    </button>
+    <button class="btn btn-outline" onclick="showCours()">
+      <i class="fa-solid fa-book-open"></i> Cours Python
+    </button>
+    <a href="/menu" class="btn btn-outline">
+      <i class="fa-solid fa-house"></i> Retour
+    </a>
+  </div>
+</div>
+
+<script th:src="@{/js/stars.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:inline="javascript">
+  const currentDiffInit = [[${difficulte}]];
+  const studentVies = [[${student.vies}]];
+</script>
+<script th:src="@{/js/runner.js}"></script>
+<script>
+function closeConsignes() {
+  document.getElementById('modal-consignes').style.display = 'none';
+}
+function showCours() {
+  document.getElementById('quiz-modal').style.display      = 'none';
+  document.getElementById('modal-gameover').style.display  = 'none';
+  document.getElementById('modal-cours').style.display     = 'flex';
+}
+function closeCours() {
+  document.getElementById('modal-cours').style.display = 'none';
+}
+// Vérifie game over au chargement
+if (studentVies <= 0) {
+  document.getElementById('modal-consignes').style.display = 'none';
+  document.getElementById('modal-gameover').style.display  = 'flex';
+}
+</script>
+</body>
+</html>

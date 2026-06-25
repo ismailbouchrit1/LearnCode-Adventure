@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="hud" class="hud" th:if="${student != null}">
+  <div class="hud-item">
+    <span th:if="${student.personnage == 'girl'}" class="hud-char girl-char">
+      <i class="fa-solid fa-user" style="color:#ff6b9d;"></i>
+    </span>
+    <span th:if="${student.personnage == 'boy'}" class="hud-char boy-char">
+      <i class="fa-solid fa-user" style="color:#74b9ff;"></i>
+    </span>
+    <span class="hud-name" th:text="${student.nom}"></span>
+  </div>
+
+  <div class="hud-item">
+    <i class="fa-solid fa-star" style="color:#ffd700;font-size:16px;"></i>
+    <span class="hud-val" id="hud-score" th:text="${student.score}">0</span>
+  </div>
+
+  <div class="hud-item">
+    <i class="fa-solid fa-trophy" style="color:#43e97b;font-size:14px;"></i>
+    <span class="hud-val green" id="hud-niveau" th:text="'Niv.' + student.niveau">1</span>
+  </div>
+
+  <div class="hud-item lives-wrap" id="hud-lives">
+    <th:block th:each="i : ${#numbers.sequence(1, 3)}">
+      <i class="fa-solid fa-heart"
+         th:classappend="${i <= student.vies} ? ' heart-full' : ' heart-empty'"></i>
+    </th:block>
+  </div>
+
+  <div class="hud-item">
+    <a href="/menu"        class="hud-link"><i class="fa-solid fa-house"></i> Menu</a>
+    <a href="/leaderboard" class="hud-link"><i class="fa-solid fa-ranking-star"></i> Top</a>
+    <a href="/logout"      class="hud-link"><i class="fa-solid fa-right-from-bracket"></i></a>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Classement - LearnCode</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    .lb-wrap { max-width:700px; width:100%; }
+    .lb-header {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:20px; flex-wrap:wrap; gap:10px;
+    }
+    .lb-refresh {
+      background:rgba(108,99,255,.15); border:1px solid var(--acc1);
+      border-radius:50px; padding:8px 18px; color:var(--acc1);
+      font-family:'Fredoka One',cursive; cursor:pointer;
+      font-size:.9rem; transition:all .2s;
+    }
+    .lb-refresh:hover { background:rgba(108,99,255,.3); }
+
+    .lb-card {
+      background:var(--card);
+      border:1px solid rgba(108,99,255,.3);
+      border-radius:22px; overflow:hidden;
+      box-shadow:0 8px 40px rgba(0,0,0,.4);
+    }
+    .lb-table { width:100%; border-collapse:collapse; }
+    .lb-table thead tr {
+      background:rgba(108,99,255,.15);
+      border-bottom:2px solid rgba(108,99,255,.3);
+    }
+    .lb-table th {
+      font-family:'Fredoka One',cursive; color:var(--muted);
+      font-weight:400; padding:14px 16px; text-align:left;
+      font-size:.9rem;
+    }
+    .lb-table td { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.04); }
+    .lb-table tbody tr:last-child td { border-bottom:none; }
+    .lb-table tbody tr:hover td { background:rgba(108,99,255,.06); transition:all .2s; }
+
+    .rank-gold   td { background:rgba(255,215,0,.06); }
+    .rank-silver td { background:rgba(192,192,192,.04); }
+    .rank-bronze td { background:rgba(205,127,50,.04); }
+    .current-player td { background:rgba(108,99,255,.1) !important; }
+
+    .rank-trophy { font-size:1.4rem; }
+    .rank-num    { font-family:'Fredoka One',cursive; color:var(--muted); font-size:1.1rem; }
+
+    .player-info { display:flex; align-items:center; gap:10px; }
+    .player-icon { font-size:1.4rem; }
+    .player-name { font-weight:700; font-size:1rem; }
+    .you-tag {
+      display:inline-block; padding:2px 8px;
+      background:rgba(67,233,123,.2); color:var(--acc3);
+      border:1px solid rgba(67,233,123,.3);
+      border-radius:50px; font-size:.7rem; font-weight:700;
+    }
+    .score-val {
+      font-family:'Fredoka One',cursive; font-size:1.2rem; color:var(--gold);
+      display:flex; align-items:center; gap:5px;
+    }
+    .level-val { color:var(--acc3); font-weight:700; }
+    .stat-val  { color:var(--muted); font-size:.95rem; }
+
+    .empty-state {
+      text-align:center; padding:40px;
+      color:var(--muted);
+    }
+    .empty-state i { font-size:3rem; display:block; margin-bottom:12px; }
+
+    .lb-stats-bar {
+      display:flex; gap:20px; flex-wrap:wrap;
+      justify-content:center; margin-bottom:20px;
+    }
+    .lb-stat {
+      background:var(--card); border:1px solid rgba(108,99,255,.2);
+      border-radius:14px; padding:12px 20px; text-align:center;
+    }
+    .lb-stat-num  { font-family:'Fredoka One',cursive; font-size:1.5rem; color:var(--gold); display:block; }
+    .lb-stat-label{ font-size:.8rem; color:var(--muted); }
+  </style>
+</head>
+<body>
+<div id="starfield"></div>
+<div th:replace="~{fragments :: hud}"></div>
+
+<div class="screen" style="padding-top:75px; align-items:center;">
+
+  <h2 class="section-title gold-text">
+    <i class="fa-solid fa-ranking-star"></i> Tableau des Champions
+  </h2>
+  <p class="section-sub">Les meilleurs eleves de LearnCode Adventure !</p>
+
+  <!-- Stats globales -->
+  <div class="lb-stats-bar">
+    <div class="lb-stat">
+      <span class="lb-stat-num" th:text="${classement.size()}">0</span>
+      <span class="lb-stat-label"><i class="fa-solid fa-users"></i> Joueurs</span>
+    </div>
+    <div class="lb-stat">
+      <span class="lb-stat-num" th:text="${classement.isEmpty() ? 0 : classement[0].score}">0</span>
+      <span class="lb-stat-label"><i class="fa-solid fa-crown" style="color:#ffd700;"></i> Meilleur score</span>
+    </div>
+    <div class="lb-stat" th:if="${student != null}">
+      <span class="lb-stat-num" style="color:var(--acc1);" th:text="${student.score}">0</span>
+      <span class="lb-stat-label"><i class="fa-solid fa-user"></i> Ton score</span>
+    </div>
+  </div>
+
+  <div class="lb-wrap">
+    <div class="lb-header">
+      <span style="font-family:'Fredoka One',cursive; color:var(--muted); font-size:.9rem;">
+        <i class="fa-solid fa-database" style="color:var(--acc1);"></i>
+        Sauvegarde automatique apres chaque jeu
+      </span>
+      <a href="/leaderboard" class="lb-refresh">
+        <i class="fa-solid fa-rotate"></i> Actualiser
+      </a>
+    </div>
+
+    <div class="lb-card">
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th><i class="fa-solid fa-user"></i> Joueur</th>
+            <th><i class="fa-solid fa-star" style="color:#ffd700;"></i> Score</th>
+            <th><i class="fa-solid fa-layer-group" style="color:#43e97b;"></i> Niv.</th>
+            <th><i class="fa-solid fa-puzzle-piece" style="color:#6c63ff;"></i></th>
+            <th><i class="fa-solid fa-circle-question" style="color:#f7971e;"></i></th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- Lignes joueurs -->
+          <tr th:each="s, st : ${classement}"
+              th:classappend="
+                ${st.index == 0} ? 'rank-gold' :
+                ${st.index == 1} ? 'rank-silver' :
+                ${st.index == 2} ? 'rank-bronze' : ''
+              "
+              th:class="${student != null and s.nom == student.nom} ?
+                         'current-player' : ''">
+
+            <!-- Rang -->
+            <td>
+              <span class="rank-trophy" th:if="${st.index == 0}">🥇</span>
+              <span class="rank-trophy" th:if="${st.index == 1}">🥈</span>
+              <span class="rank-trophy" th:if="${st.index == 2}">🥉</span>
+              <span class="rank-num"    th:if="${st.index > 2}" th:text="${st.index + 1}"></span>
+            </td>
+
+            <!-- Joueur -->
+            <td>
+              <div class="player-info">
+                <span class="player-icon">
+                  <i th:if="${s.personnage == 'girl'}"
+                     class="fa-solid fa-face-smile-beam"
+                     style="color:#ff6b9d;"></i>
+                  <i th:if="${s.personnage == 'boy'}"
+                     class="fa-solid fa-face-grin-squint"
+                     style="color:#74b9ff;"></i>
+                </span>
+                <span class="player-name" th:text="${s.nom}">Nom</span>
+                <span class="you-tag"
+                      th:if="${student != null and s.nom == student.nom}">
+                  <i class="fa-solid fa-circle-check"></i> Vous
+                </span>
+              </div>
+            </td>
+
+            <!-- Score -->
+            <td>
+              <div class="score-val">
+                <i class="fa-solid fa-star" style="font-size:.85rem;"></i>
+                <span th:text="${s.score}">0</span>
+              </div>
+            </td>
+
+            <!-- Niveau -->
+            <td>
+              <span class="level-val" th:text="'Niv.' + s.niveau">1</span>
+            </td>
+
+            <!-- Puzzles -->
+            <td><span class="stat-val" th:text="${s.puzzlesResolus}">0</span></td>
+
+            <!-- Quiz -->
+            <td><span class="stat-val" th:text="${s.quizReussis}">0</span></td>
+
+          </tr>
+
+          <!-- Aucun joueur -->
+          <tr th:if="${classement == null or classement.isEmpty()}">
+            <td colspan="6">
+              <div class="empty-state">
+                <i class="fa-solid fa-ghost" style="color:var(--muted);"></i>
+                <p>Aucun joueur pour l'instant.</p>
+                <p style="font-size:.9rem; margin-top:6px;">
+                  Joue et reviens voir ton score ici !
+                </p>
+              </div>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div><!-- /lb-card -->
+
+    <!-- Info base de données -->
+    <div style="text-align:center; margin-top:16px; font-size:.82rem; color:var(--muted);">
+      <i class="fa-solid fa-circle-info" style="color:var(--acc1);"></i>
+      Les scores sont sauvegardes dans la base de donnees H2 locale
+      (<code style="background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px;">learncode_db.mv.db</code>)
+    </div>
+
+  </div><!-- /lb-wrap -->
+
+  <div class="btn-row" style="margin-top:24px;">
+    <a href="/menu" class="btn btn-primary">
+      <i class="fa-solid fa-house"></i> Retour au menu
+    </a>
+    <a href="/game/puzzle" class="btn btn-gold">
+      <i class="fa-solid fa-puzzle-piece"></i> Jouer maintenant
+    </a>
+  </div>
+
+</div>
+
+<script th:src="@{/js/stars.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

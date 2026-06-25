@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Puzzle Python - LearnCode</title>
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/puzzle.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+<div id="starfield"></div>
+<div th:replace="~{fragments :: hud}"></div>
+
+<!-- MODAL CONSIGNES -->
+<div id="modal-consignes" class="modal-overlay open">
+  <div class="modal-box">
+    <div class="modal-icon"><i class="fa-solid fa-puzzle-piece" style="color:#6c63ff;font-size:3rem;"></i></div>
+    <h2 class="modal-title" style="color:#6c63ff;">Puzzle Python</h2>
+    <div class="modal-rules">
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-1" style="color:#6c63ff;"></i>
+        <span>Des lignes de code Python sont <strong>melangees</strong></span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-2" style="color:#f7971e;"></i>
+        <span><strong>Glisse et depose</strong> les lignes pour les remettre dans le bon ordre</span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-3" style="color:#43e97b;"></i>
+        <span>Clique <strong>Verifier</strong> quand tu penses avoir reussi</span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-circle-check" style="color:#43e97b;"></i>
+        <span>Bonne reponse → <strong style="color:#ffd700;">+10 points</strong></span>
+      </div>
+      <div class="rule-item">
+        <i class="fa-solid fa-heart-crack" style="color:#ff4757;"></i>
+        <span>Mauvaise reponse → <strong style="color:#ff4757;">-1 vie</strong></span>
+      </div>
+    </div>
+    <div class="hint-box" style="margin:16px 0;">
+      <strong><i class="fa-solid fa-lightbulb" style="color:#43e97b;"></i> Structure d'un programme :</strong>
+      <div class="hint-steps">
+        <span class="hint-step s1"><i class="fa-solid fa-database"></i> 1. Variables</span>
+        <span class="hint-step s2"><i class="fa-solid fa-keyboard"></i> 2. Entrees</span>
+        <span class="hint-step s3"><i class="fa-solid fa-gear"></i> 3. Traitement</span>
+        <span class="hint-step s4"><i class="fa-solid fa-display"></i> 4. Affichage</span>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-lg" onclick="closeConsignes()">
+      <i class="fa-solid fa-play"></i> C'est parti !
+    </button>
+  </div>
+</div>
+
+<!-- MODAL COURS -->
+<div id="modal-cours" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:680px;max-height:85vh;overflow-y:auto;">
+    <div class="modal-icon"><i class="fa-solid fa-book-open" style="color:#43e97b;font-size:2.5rem;"></i></div>
+    <h2 class="modal-title" style="color:#43e97b;">Cours Python Rapide</h2>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-database" style="color:#6c63ff;"></i> Variables</h4>
+      <pre class="code-block">nom = "Abir"      # chaine de texte
+age = 16          # nombre entier
+note = 18.5       # nombre decimal
+actif = True      # booleen</pre>
+    </div>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-keyboard" style="color:#f7971e;"></i> Entrees / Sorties</h4>
+      <pre class="code-block">nom = input("Quel est ton nom ? ")
+print("Bonjour", nom)
+print("Tu as", age, "ans")</pre>
+    </div>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-code-branch" style="color:#ff6584;"></i> Conditions</h4>
+      <pre class="code-block">if age >= 18:
+    print("Majeur")
+elif age >= 13:
+    print("Ado")
+else:
+    print("Enfant")</pre>
+    </div>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-rotate" style="color:#43e97b;"></i> Boucles</h4>
+      <pre class="code-block">for i in range(5):
+    print(i)       # 0,1,2,3,4
+
+while x > 0:
+    x = x - 1</pre>
+    </div>
+
+    <div class="cours-section">
+      <h4><i class="fa-solid fa-gear" style="color:#a29bfe;"></i> Fonctions</h4>
+      <pre class="code-block">def saluer(nom):
+    message = "Bonjour " + nom
+    return message
+
+resultat = saluer("Abir")
+print(resultat)</pre>
+    </div>
+
+    <button class="btn btn-success" onclick="closeCours()">
+      <i class="fa-solid fa-check"></i> Compris ! Retour au jeu
+    </button>
+  </div>
+</div>
+
+<!-- MODAL GAME OVER -->
+<div id="modal-gameover" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-icon">
+      <i class="fa-solid fa-skull-crossbones" style="color:#ff4757;font-size:3rem;animation:shake 0.5s ease infinite;"></i>
+    </div>
+    <h2 class="modal-title" style="color:#ff4757;">Plus de vies !</h2>
+    <p style="color:var(--muted);margin-bottom:16px;">
+      Tu as utilise toutes tes vies...<br>
+      <strong style="color:#ffd700;">Revise le cours Python avant de recommencer !</strong>
+    </p>
+    <div class="btn-row">
+      <button class="btn btn-success" onclick="showCours()">
+        <i class="fa-solid fa-book-open"></i> Voir le cours
+      </button>
+      <a href="/game/puzzle" class="btn btn-primary">
+        <i class="fa-solid fa-rotate"></i> Recommencer
+      </a>
+      <a href="/menu" class="btn btn-outline">
+        <i class="fa-solid fa-house"></i> Menu
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="screen" style="padding-top:70px;align-items:center;">
+  <div class="game-header">
+    <h2 class="section-title" style="color:var(--acc1);">
+      <i class="fa-solid fa-puzzle-piece"></i> Puzzle Python
+    </h2>
+    <div class="game-meta">
+      <span class="diff-badge" th:text="${puzzle.difficulte()}">Debutant</span>
+      <span class="game-num">
+        <i class="fa-solid fa-layer-group"></i>
+        Puzzle <span th:text="${totalPuzzles}">6</span> disponibles
+      </span>
+      <button class="btn-cours" onclick="showCours()">
+        <i class="fa-solid fa-book-open"></i> Voir le cours
+      </button>
+    </div>
+  </div>
+
+  <div class="hint-box">
+    <strong><i class="fa-solid fa-lightbulb" style="color:#43e97b;"></i> Structure :</strong>
+    <div class="hint-steps">
+      <span class="hint-step s1">1. Variables</span>
+      <span class="hint-step s2">2. Entrees</span>
+      <span class="hint-step s3">3. Traitement</span>
+      <span class="hint-step s4">4. Affichage</span>
+    </div>
+  </div>
+
+  <div class="puzzle-title">
+    <i class="fa-solid fa-code" style="color:#6c63ff;"></i>
+    <span th:text="${puzzle.titre()}">Titre</span>
+  </div>
+
+  <div id="puzzle-area" class="puzzle-area">
+    <div th:each="idx,st : ${ordre}"
+         class="code-line" draggable="true"
+         th:data-line-idx="${idx}"
+         th:data-display-idx="${st.index}"
+         ondragstart="dragStart(event)"
+         ondragover="dragOver(event)"
+         ondrop="dragDrop(event)"
+         ondragend="dragEnd(event)">
+      <span class="drag-handle"><i class="fa-solid fa-grip-vertical"></i></span>
+      <span class="line-num" th:text="${st.index + 1}">1</span>
+      <code class="code-content" th:text="${puzzle.lignes().get(idx).code()}">code</code>
+      <span class="line-hint" th:text="${puzzle.lignes().get(idx).hint()}">hint</span>
+    </div>
+  </div>
+
+  <form id="puzzle-form" action="/game/puzzle" method="post" style="display:none;">
+    <input type="hidden" name="puzzleId" th:value="${puzzle.id()}"/>
+    <input type="hidden" name="reponse"  id="reponse-input"/>
+  </form>
+
+  <div class="btn-row">
+    <button class="btn btn-success" onclick="verifierPuzzle()">
+      <i class="fa-solid fa-check"></i> Verifier
+    </button>
+    <a href="/game/puzzle" class="btn btn-gold">
+      <i class="fa-solid fa-shuffle"></i> Nouveau puzzle
+    </a>
+    <button class="btn btn-outline" onclick="showCours()">
+      <i class="fa-solid fa-book-open"></i> Cours
+    </button>
+    <a href="/menu" class="btn btn-outline">
+      <i class="fa-solid fa-house"></i> Menu
+    </a>
+  </div>
+  <div id="feedback" class="feedback-msg"></div>
+</div>
+
+<script th:src="@{/js/stars.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/puzzle.js}"></script>
+<script>
+  const vies = /*[[${student.vies}]]*/ 3;
+  if (vies <= 0) {
+    document.getElementById('modal-gameover').style.display = 'flex';
+  }
+  function closeConsignes() {
+    document.getElementById('modal-consignes').style.display = 'none';
+  }
+  function showCours() {
+    document.getElementById('modal-gameover').style.display = 'none';
+    document.getElementById('modal-cours').style.display    = 'flex';
+  }
+  function closeCours() {
+    document.getElementById('modal-cours').style.display = 'none';
+  }
+</script>
+</body>
+</html>
